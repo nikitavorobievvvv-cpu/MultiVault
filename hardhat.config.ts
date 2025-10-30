@@ -18,49 +18,50 @@ const config: HardhatUserConfig = {
   solidity: {
     version: "0.8.24",
     settings: {
-      optimizer: { enabled: true, runs: 200 }
-    }
+      optimizer: { enabled: true, runs: 200 },
+    },
   },
   networks: {
     base: {
       url: RPC_URL_BASE,
-      accounts
+      accounts,
+      chainId: 8453,
     },
     baseSepolia: {
       url: RPC_URL_BASE_SEPOLIA,
-      accounts
+      accounts,
+      chainId: 84532,
     },
     sepolia: {
       url: RPC_URL_SEPOLIA,
-      accounts
-    }
-  },
-  etherscan: {
-    // Basescan/Etherscan compatible API
-    apiKey: {
-      base: ETHERSCAN_API_KEY,
-      baseSepolia: ETHERSCAN_API_KEY,
-      sepolia: ETHERSCAN_API_KEY
+      accounts,
+      chainId: 11155111,
     },
+  },
+  // ✅ hardhat-verify v2: один ключ и кастомные сети
+  etherscan: {
+    apiKey: ETHERSCAN_API_KEY, // одна строка вместо объекта
     customChains: [
       {
         network: "base",
         chainId: 8453,
         urls: {
           apiURL: "https://api.basescan.org/api",
-          browserURL: "https://basescan.org"
-        }
+          browserURL: "https://basescan.org",
+        },
       },
       {
         network: "baseSepolia",
         chainId: 84532,
         urls: {
           apiURL: "https://api-sepolia.basescan.org/api",
-          browserURL: "https://sepolia.basescan.org"
-        }
-      }
-    ]
-  }
+          browserURL: "https://sepolia.basescan.org",
+        },
+      },
+    ],
+  },
+  // чтобы не спамило про Sourcify
+  sourcify: { enabled: false },
 };
 
 export default config;
