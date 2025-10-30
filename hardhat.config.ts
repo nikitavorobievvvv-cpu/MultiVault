@@ -38,9 +38,9 @@ const config: HardhatUserConfig = {
       chainId: 11155111,
     },
   },
-  // ✅ hardhat-verify v2: один ключ и кастомные сети
+  
   etherscan: {
-    apiKey: ETHERSCAN_API_KEY, // одна строка вместо объекта
+    apiKey: ETHERSCAN_API_KEY, 
     customChains: [
       {
         network: "base",
@@ -60,7 +60,7 @@ const config: HardhatUserConfig = {
       },
     ],
   },
-  // чтобы не спамило про Sourcify
+  
   sourcify: { enabled: false },
 };
 
