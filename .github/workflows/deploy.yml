@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: 20
 
-      # Use pnpm version from package.json:packageManager (no explicit version here)
+      # ✅ ВАЖНО: тут НЕТ ключа `version`
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
