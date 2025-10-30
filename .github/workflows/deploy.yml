@@ -15,27 +15,29 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - name: Install pnpm
+      # ✅ FIXED: removed pnpm version duplication
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          run_install: false
 
-      - name: Install deps
+      - name: Install dependencies
         run: pnpm install
 
-      - name: Build
+      - name: Build project
         run: pnpm build
 
-      - name: Deploy
+      - name: Deploy MultiVault
         env:
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
@@ -43,7 +45,7 @@ jobs:
           RPC_URL_BASE_SEPOLIA: ${{ secrets.RPC_URL_BASE_SEPOLIA }}
           RPC_URL_SEPOLIA: ${{ secrets.RPC_URL_SEPOLIA }}
         run: |
-          echo "Deploying to ${{ github.event.inputs.network }}"
+          echo "🚀 Deploying MultiVault to network: ${{ github.event.inputs.network }}"
           pnpm hardhat run scripts/deploy.ts --network ${{ github.event.inputs.network }}
 
       - name: Verify (optional)
@@ -54,6 +56,11 @@ jobs:
           RPC_URL_BASE_SEPOLIA: ${{ secrets.RPC_URL_BASE_SEPOLIA }}
           RPC_URL_SEPOLIA: ${{ secrets.RPC_URL_SEPOLIA }}
         run: |
-          echo "You can verify manually with: pnpm hardhat verify --network ${{ github.event.inputs.network }} <PROXY_ADDRESS>"
-          # Auto-verification requires capturing the proxy address. For simplicity,
-          # read it from artifact logs or adapt scripts to write to a file.
+          echo "🧾 Verification step enabled."
+          echo "Run manually after deployment:"
+          echo "pnpm hardhat verify --network ${{ github.event.inputs.network }} <PROXY_ADDRESS>"
+
+      - name: Job summary
+        run: |
+          echo "✅ Deployment job finished."
+          echo "Check logs above for proxy and implementation addresses."
