@@ -22,25 +22,12 @@ const config: HardhatUserConfig = {
     },
   },
   networks: {
-    base: {
-      url: RPC_URL_BASE,
-      accounts,
-      chainId: 8453,
-    },
-    baseSepolia: {
-      url: RPC_URL_BASE_SEPOLIA,
-      accounts,
-      chainId: 84532,
-    },
-    sepolia: {
-      url: RPC_URL_SEPOLIA,
-      accounts,
-      chainId: 11155111,
-    },
+    base: { url: RPC_URL_BASE, accounts, chainId: 8453 },
+    baseSepolia: { url: RPC_URL_BASE_SEPOLIA, accounts, chainId: 84532 },
+    sepolia: { url: RPC_URL_SEPOLIA, accounts, chainId: 11155111 },
   },
-  
   etherscan: {
-    apiKey: ETHERSCAN_API_KEY, 
+    apiKey: ETHERSCAN_API_KEY, // v2: single key string
     customChains: [
       {
         network: "base",
@@ -60,7 +47,6 @@ const config: HardhatUserConfig = {
       },
     ],
   },
-  
   sourcify: { enabled: false },
 };
 
