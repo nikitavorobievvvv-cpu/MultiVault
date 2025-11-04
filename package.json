@@ -5,14 +5,14 @@
   "license": "MIT",
   "packageManager": "pnpm@9.0.0",
   "scripts": {
+    "upgrade:baseSepolia": "hardhat run scripts/upgrade.ts --network baseSepolia",
+    "lint": "echo 'no lint configured'",
     "build": "hardhat compile",
     "test": "hardhat test",
     "coverage": "hardhat coverage",
-    "lint": "echo 'no lint configured'",
     "deploy:base": "hardhat run scripts/deploy.ts --network base",
     "deploy:baseSepolia": "hardhat run scripts/deploy.ts --network baseSepolia",
-    "upgrade:baseSepolia": "hardhat run scripts/upgrade.ts --network baseSepolia",
-    "verify:baseSepolia": "hardhat verify --network baseSepolia"
+    "verify:file": "ts-node scripts/verify.ts"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
