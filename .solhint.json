@@ -4,6 +4,9 @@
     "compiler-version": ["error", "^0.8.24"],
     "func-visibility": ["error", { "ignoreConstructors": true }],
     "no-empty-blocks": "off",
-    "max-line-length": ["warn", 140]
+    "quotes": ["off"],
+    "immutable-vars-naming": ["warn", "SNAKE_CASE"],
+    "max-line-length": ["warn", 140],
+    "custom-errors": ["warn"]
   }
 }
