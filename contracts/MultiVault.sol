@@ -84,8 +84,13 @@ contract MultiVault is
         return _balances[user][token];
     }
 
-    function pause() external onlyOwner { _pause(); }
-    function unpause() external onlyOwner { _unpause(); }
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    function unpause() external onlyOwner {
+        _unpause();
+    }
 
     // UUPS authorization
     function _authorizeUpgrade(address) internal override onlyOwner {}
