@@ -23,6 +23,11 @@ contract MultiVault is
 {
     using SafeERC20 for IERC20;
 
+    // ---------- Custom Errors ----------
+    error NoValue();
+    error NoAmount();
+    error Insufficient();
+
     // user => token(0 for native) => balance
     mapping(address => mapping(address => uint256)) private _balances;
 
@@ -46,14 +51,14 @@ contract MultiVault is
     }
 
     function depositNative() public payable whenNotPaused nonReentrant {
-        require(msg.value > 0, "No value");
+        if (msg.value == 0) revert NoValue();
         _balances[msg.sender][address(0)] += msg.value;
         emit Deposit(msg.sender, address(0), msg.value);
     }
 
     function withdrawNative(uint256 amount) external whenNotPaused nonReentrant {
         uint256 bal = _balances[msg.sender][address(0)];
-        require(amount > 0 && amount <= bal, "Insufficient");
+        if (amount == 0 || amount > bal) revert Insufficient();
         _balances[msg.sender][address(0)] = bal - amount;
         (bool ok, ) = msg.sender.call{value: amount}("");
         require(ok, "Transfer failed");
@@ -61,7 +66,7 @@ contract MultiVault is
     }
 
     function depositToken(address token, uint256 amount) external whenNotPaused nonReentrant {
-        require(amount > 0, "No amount");
+        if (amount == 0) revert NoAmount();
         IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
         _balances[msg.sender][token] += amount;
         emit Deposit(msg.sender, token, amount);
@@ -69,7 +74,7 @@ contract MultiVault is
 
     function withdrawToken(address token, uint256 amount) external whenNotPaused nonReentrant {
         uint256 bal = _balances[msg.sender][token];
-        require(amount > 0 && amount <= bal, "Insufficient");
+        if (amount == 0 || amount > bal) revert Insufficient();
         _balances[msg.sender][token] = bal - amount;
         IERC20(token).safeTransfer(msg.sender, amount);
         emit Withdraw(msg.sender, token, amount);
