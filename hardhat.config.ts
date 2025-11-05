@@ -2,6 +2,8 @@ import * as dotenv from "dotenv";
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "@openzeppelin/hardhat-upgrades";
+import "hardhat-gas-reporter";
+import "solidity-coverage";
 
 dotenv.config();
 
@@ -17,37 +19,37 @@ const accounts = PRIVATE_KEY ? [PRIVATE_KEY] : [];
 const config: HardhatUserConfig = {
   solidity: {
     version: "0.8.24",
-    settings: {
-      optimizer: { enabled: true, runs: 200 },
-    },
+    settings: { optimizer: { enabled: true, runs: 200 } }
   },
   networks: {
     base: { url: RPC_URL_BASE, accounts, chainId: 8453 },
     baseSepolia: { url: RPC_URL_BASE_SEPOLIA, accounts, chainId: 84532 },
-    sepolia: { url: RPC_URL_SEPOLIA, accounts, chainId: 11155111 },
+    sepolia: { url: RPC_URL_SEPOLIA, accounts, chainId: 11155111 }
   },
   etherscan: {
-    apiKey: ETHERSCAN_API_KEY, // v2: single key string
+    apiKey: ETHERSCAN_API_KEY,
     customChains: [
       {
         network: "base",
         chainId: 8453,
-        urls: {
-          apiURL: "https://api.basescan.org/api",
-          browserURL: "https://basescan.org",
-        },
+        urls: { apiURL: "https://api.basescan.org/api", browserURL: "https://basescan.org" }
       },
       {
         network: "baseSepolia",
         chainId: 84532,
-        urls: {
-          apiURL: "https://api-sepolia.basescan.org/api",
-          browserURL: "https://sepolia.basescan.org",
-        },
-      },
-    ],
+        urls: { apiURL: "https://api-sepolia.basescan.org/api", browserURL: "https://sepolia.basescan.org" }
+      }
+    ]
   },
   sourcify: { enabled: false },
+  gasReporter: {
+    enabled: process.env.REPORT_GAS ? true : false,
+    currency: "USD",
+    coinmarketcap: process.env.CMC_API_KEY || undefined,
+    showTimeSpent: true,
+    excludeContracts: ["contracts/mocks/"],
+    noColors: true
+  }
 };
 
 export default config;
