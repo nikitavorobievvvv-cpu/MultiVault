@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers, upgrades } from "hardhat";
 import { Contract } from "ethers";
 
-describe("MultiVault", function () {
+describe("MultiVault - Native ETH", function () {
   let vault: Contract, owner: any, user: any;
 
   beforeEach(async () => {
@@ -19,8 +19,12 @@ describe("MultiVault", function () {
     expect(await vault.balanceOf(owner.address, ethers.ZeroAddress)).to.equal(ethers.parseEther("0.6"));
   });
 
-  it("pauses", async () => {
+  it("reverts withdrawal > balance", async () => {
+    await expect(vault.withdrawNative(1)).to.be.revertedWith("Insufficient");
+  });
+
+  it("pauses native flows", async () => {
     await vault.pause();
-    await expect(vault.withdrawNative(1)).to.be.reverted;
+    await expect(vault.withdrawNative(1)).to.be.revertedWithCustomError(vault, "EnforcedPause");
   });
 });
