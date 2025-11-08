@@ -16,19 +16,29 @@
     "deploy:baseSepolia": "hardhat run scripts/deploy.ts --network baseSepolia",
     "verify:file": "ts-node scripts/verify.ts"
   },
-  "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+  "dependencies": {
     "@openzeppelin/contracts": "^5.0.2",
     "@openzeppelin/contracts-upgradeable": "^5.0.2",
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.10",
+    "wagmi": "^2.14.3",
+    "viem": "^2.9.2",
+
+    "base-account-sdk": "github:base/account-sdk",
+    "base-pay-sdk": "github:base/pay-sdk",
+    "base-onchainkit": "github:base/onchainkit",
+    "onchainkit-react": "github:coinbase/onchainkit-react",
+    "cbpay-js": "github:coinbase/cbpay-js"
+  },
+  "devDependencies": {
     "@openzeppelin/hardhat-upgrades": "^3.2.0",
     "dotenv": "^16.4.5",
-    "hardhat": "^2.22.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3",
     "prettier": "^3.3.3",
     "prettier-plugin-solidity": "^1.3.1",
     "solhint": "^3.6.2",
     "hardhat-gas-reporter": "^2.2.0",
-    "solidity-coverage": "^0.8.7"
+    "solidity-coverage": "^0.8.16"
   }
 }
