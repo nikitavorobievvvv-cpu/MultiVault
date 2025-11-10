@@ -1,0 +1,61 @@
+name: Upgrade Proxy
+
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: "Target network: base or basesepolia"
+        required: true
+        default: "basesepolia"
+        type: choice
+        options:
+          - basesepolia
+          - base
+
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --max_old_space_size=4096
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Configure RPC URL
+        id: rpc
+        run: |
+          if [ "${{ inputs.network }}" = "base" ]; then
+            echo "RPC_URL=${{ secrets.BASE_RPC_MAINNET }}" >> $GITHUB_ENV
+          else
+            echo "RPC_URL=${{ secrets.BASE_RPC_SEPOLIA }}" >> $GITHUB_ENV
+          fi
+
+      - name: Check secrets
+        run: |
+          test -n "${{ env.RPC_URL }}"
+          test -n "${{ secrets.PRIVATE_KEY }}"
+
+      - name: Upgrade implementation
+        run: npx hardhat run scripts/upgrade.ts --network ${{ inputs.network }}
+
+      - name: Verify implementation on explorer
+        if: ${{ env.ETHERSCAN_API_KEY != '' }}
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+        run: |
+          echo "Skipping explicit verify step: contract factory verification handled by existing config if enabled."
+
+      - name: Upload deployments manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployments-${{ inputs.network }}
+          path: deployments
