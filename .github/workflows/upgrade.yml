@@ -53,9 +53,9 @@ jobs:
         run: npx hardhat run scripts/upgrade.ts --network ${{ inputs.network }}
 
       - name: Verify implementation on explorer
-        if: ${{ secrets.ETHERSCAN_API_KEY != '' }}
         env:
           ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+        if: ${{ env.ETHERSCAN_API_KEY != '' }}
         run: |
           echo "Verification step placeholder"
 
