@@ -36,18 +36,27 @@ jobs:
             npm install --no-audit --no-fund
           fi
 
-      - name: Configure RPC URL
+      - name: Configure RPC URL and export secrets
         run: |
           if [ "${{ inputs.network }}" = "base" ]; then
             echo "RPC_URL=${{ secrets.BASE_RPC_MAINNET }}" >> $GITHUB_ENV
           else
             echo "RPC_URL=${{ secrets.BASE_RPC_SEPOLIA }}" >> $GITHUB_ENV
           fi
+          echo "PRIVATE_KEY=${{ secrets.PRIVATE_KEY }}" >> $GITHUB_ENV
+          echo "ETHERSCAN_API_KEY=${{ secrets.ETHERSCAN_API_KEY }}" >> $GITHUB_ENV
 
       - name: Check secrets
         run: |
-          test -n "${{ env.RPC_URL }}"
-          test -n "${{ secrets.PRIVATE_KEY }}"
+          if [ -z "${RPC_URL}" ]; then
+            echo "::error title=Missing RPC secret::Set BASE_RPC_SEPOLIA for testnet or BASE_RPC_MAINNET for mainnet in Actions secrets."
+            exit 1
+          fi
+          if [ -z "${PRIVATE_KEY}" ]; then
+            echo "::error title=Missing PRIVATE_KEY::Add PRIVATE_KEY in Actions secrets (EOA private key with funds)."
+            exit 1
+          fi
+          echo "Secrets OK"
 
       - name: Upgrade implementation
         run: npx hardhat run scripts/upgrade.ts --network ${{ inputs.network }}
