@@ -1,19 +1,48 @@
 import { ethers, upgrades } from "hardhat";
+import fs from "fs";
+import path from "path";
 
-// Set your previously deployed proxy here or pass via env/CLI
-const PROXY_ADDRESS = process.env.PROXY_ADDRESS || "";
+type Manifest = {
+  chainId: number;
+  network: string;
+  proxy: string;
+  implementation?: string;
+  contractName: string;
+  lastUpgrade?: {
+    implementation: string;
+    block?: number;
+    txHash?: string;
+    timestamp?: string;
+  };
+};
 
 async function main() {
-  if (!PROXY_ADDRESS) throw new Error("Set PROXY_ADDRESS env var");
+  const net = await ethers.provider.getNetwork();
+  const chainId = Number(net.chainId.toString());
+  const manifestPath = path.join(process.cwd(), "deployments", `${chainId}.json`);
+  if (!fs.existsSync(manifestPath)) throw new Error(`Missing deployments manifest for chainId ${chainId}`);
+  const raw = fs.readFileSync(manifestPath, "utf8");
+  const manifest: Manifest = JSON.parse(raw);
+  if (!manifest.proxy) throw new Error("Missing proxy address in manifest");
+  if (!manifest.contractName) throw new Error("Missing contractName in manifest");
 
-  const MultiVaultV2 = await ethers.getContractFactory("MultiVault");
-  const upgraded = await upgrades.upgradeProxy(PROXY_ADDRESS, MultiVaultV2);
+  const Factory = await ethers.getContractFactory(manifest.contractName);
+  const upgraded = await upgrades.upgradeProxy(manifest.proxy, Factory, { kind: "uups" });
   await upgraded.waitForDeployment();
 
-  const proxyAddress = await upgraded.getAddress();
-  const impl = await upgrades.erc1967.getImplementationAddress(proxyAddress);
-  console.log("Upgraded proxy:", proxyAddress);
-  console.log("New implementation:", impl);
+  const impl = await upgrades.erc1967.getImplementationAddress(await upgraded.getAddress());
+  const block = await ethers.provider.getBlock("latest");
+
+  manifest.implementation = impl;
+  manifest.lastUpgrade = {
+    implementation: impl,
+    block: block?.number,
+    txHash: upgraded.deploymentTransaction()?.hash,
+    timestamp: new Date().toISOString()
+  };
+
+  fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+  console.log(`Upgraded proxy ${manifest.proxy} to implementation ${impl} on chain ${chainId}`);
 }
 
 main().catch((e) => {
