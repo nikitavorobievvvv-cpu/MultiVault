@@ -1,0 +1,43 @@
+name: Create Pre-Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag (e.g. v0.1.0-rc.1)'
+        required: true
+        default: 'v0.1.0-rc.1'
+      prerelease:
+        description: 'Mark as prerelease'
+        required: true
+        type: boolean
+        default: true
+      notes:
+        description: 'Release notes'
+        required: false
+        default: 'Seed on-chain footprint on Base Sepolia and CI upgrade flow.'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Zip deployments
+        run: |
+          mkdir -p dist
+          zip -r dist/deployments.zip deployments || true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          name: ${{ inputs.tag }}
+          body: ${{ inputs.notes }}
+          prerelease: ${{ inputs.prerelease }}
+          files: |
+            dist/deployments.zip
+            README.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
