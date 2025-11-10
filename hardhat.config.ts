@@ -1,18 +1,16 @@
-import * as dotenv from "dotenv";
+import "dotenv/config";
 import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
+import "@nomicfoundation/hardhat-ethers";
+import "@nomicfoundation/hardhat-chai-matchers";
+import "@nomicfoundation/hardhat-verify";
 import "@openzeppelin/hardhat-upgrades";
 import "hardhat-gas-reporter";
-import "solidity-coverage";
+import "@typechain/hardhat";
 
-dotenv.config();
-
-const PRIVATE_KEY = process.env.PRIVATE_KEY ?? "";
-const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY ?? "";
-
-const RPC_URL_BASE = process.env.RPC_URL_BASE ?? "";
-const RPC_URL_BASE_SEPOLIA = process.env.RPC_URL_BASE_SEPOLIA ?? "";
-const RPC_URL_SEPOLIA = process.env.RPC_URL_SEPOLIA ?? "";
+const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
+const RPC_BASE = process.env.RPC_URL || process.env.BASE_RPC_MAINNET || "";
+const RPC_BASESEPOLIA = process.env.BASE_RPC_SEPOLIA || "";
+const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
 
 const accounts = PRIVATE_KEY ? [PRIVATE_KEY] : [];
 
@@ -22,33 +20,29 @@ const config: HardhatUserConfig = {
     settings: { optimizer: { enabled: true, runs: 200 } }
   },
   networks: {
-    base: { url: RPC_URL_BASE, accounts, chainId: 8453 },
-    baseSepolia: { url: RPC_URL_BASE_SEPOLIA, accounts, chainId: 84532 },
-    sepolia: { url: RPC_URL_SEPOLIA, accounts, chainId: 11155111 }
+    base: {
+      url: RPC_BASE,
+      accounts
+    },
+    basesepolia: {
+      url: RPC_BASESEPOLIA,
+      accounts
+    }
   },
   etherscan: {
-    apiKey: ETHERSCAN_API_KEY,
-    customChains: [
-      {
-        network: "base",
-        chainId: 8453,
-        urls: { apiURL: "https://api.basescan.org/api", browserURL: "https://basescan.org" }
-      },
-      {
-        network: "baseSepolia",
-        chainId: 84532,
-        urls: { apiURL: "https://api-sepolia.basescan.org/api", browserURL: "https://sepolia.basescan.org" }
-      }
-    ]
+    apiKey: {
+      base: ETHERSCAN_API_KEY,
+      basesepolia: ETHERSCAN_API_KEY
+    }
   },
-  sourcify: { enabled: false },
   gasReporter: {
-    enabled: process.env.REPORT_GAS ? true : false,
+    enabled: true,
     currency: "USD",
-    coinmarketcap: process.env.CMC_API_KEY || undefined,
-    showTimeSpent: true,
-    excludeContracts: ["contracts/mocks/"],
-    noColors: true
+    coinmarketcap: process.env.COINMARKETCAP_API_KEY || ""
+  },
+  typechain: {
+    outDir: "typechain-types",
+    target: "ethers-v6"
   }
 };
 
