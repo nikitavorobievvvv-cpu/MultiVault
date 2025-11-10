@@ -7,8 +7,7 @@
     "build": "hardhat compile",
     "test": "hardhat test",
     "deploy": "hardhat run scripts/deploy.ts",
-    "upgrade": "hardhat run scripts/upgrade.ts",
-    "lint": "echo \"no lint yet\""
+    "upgrade": "hardhat run scripts/upgrade.ts"
   },
   "dependencies": {
     "@coinbase/onchainkit": "^0.20.0",
@@ -17,7 +16,7 @@
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "@openzeppelin/hardhat-upgrades": "^1.28.0",
+    "@openzeppelin/hardhat-upgrades": "^2.0.0",
     "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.0.0",
     "dotenv": "^16.4.5",
