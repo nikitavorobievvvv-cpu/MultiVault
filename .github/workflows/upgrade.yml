@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       network:
-        description: "Target network: base or basesepolia"
+        description: "Target network"
         required: true
         default: "basesepolia"
         type: choice
@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: --max_old_space_size=4096
+      ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
 
     steps:
       - name: Checkout
@@ -36,7 +37,6 @@ jobs:
           fi
 
       - name: Configure RPC URL
-        id: rpc
         run: |
           if [ "${{ inputs.network }}" = "base" ]; then
             echo "RPC_URL=${{ secrets.BASE_RPC_MAINNET }}" >> $GITHUB_ENV
@@ -53,6 +53,11 @@ jobs:
         run: npx hardhat run scripts/upgrade.ts --network ${{ inputs.network }}
 
       - name: Verify implementation on explorer
-        env:
-          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
-        if: ${{ env.ETHERSC
+        if: ${{ env.ETHERSCAN_API_KEY != '' }}
+        run: echo "Verification step placeholder"
+
+      - name: Upload deployments manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployments-${{ inputs.network }}
+          path: deployments
