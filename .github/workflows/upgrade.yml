@@ -27,10 +27,11 @@ jobs:
         with:
           node-version: 20
 
-      - name: Force GitHub git+ssh to HTTPS
+      - name: Force GitHub SSH deps to HTTPS
         run: |
-          git config --global url."https://github.com/".insteadOf ssh://git@github.com/
           git config --global url."https://github.com/".insteadOf git@github.com:
+          git config --global url."https://github.com/".insteadOf ssh://git@github.com/
+          git config --global url."https://github.com/".insteadOf git+ssh://git@github.com/
           git config --global url."https://".insteadOf git://
 
       - name: Install dependencies
