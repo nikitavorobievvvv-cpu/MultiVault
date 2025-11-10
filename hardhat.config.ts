@@ -7,12 +7,24 @@ import "@openzeppelin/hardhat-upgrades";
 import "hardhat-gas-reporter";
 import "@typechain/hardhat";
 
-const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
-const RPC_BASE = process.env.RPC_URL || process.env.BASE_RPC_MAINNET || "";
-const RPC_BASESEPOLIA = process.env.BASE_RPC_SEPOLIA || "";
-const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
+const PK = process.env.PRIVATE_KEY || "";
+const accounts = PK ? [PK] : [];
 
-const accounts = PRIVATE_KEY ? [PRIVATE_KEY] : [];
+// Универсальные фолбэки: сначала RPC_URL (который пробрасывает workflow),
+// затем именованные секреты репозитория, затем пустая строка.
+const RPC_URL_UNIVERSAL = process.env.RPC_URL || "";
+const RPC_URL_BASE =
+  RPC_URL_UNIVERSAL ||
+  process.env.RPC_URL_BASE ||
+  process.env.BASE_RPC_MAINNET ||
+  "";
+const RPC_URL_BASE_SEPOLIA =
+  RPC_URL_UNIVERSAL ||
+  process.env.RPC_URL_BASE_SEPOLIA ||
+  process.env.BASE_RPC_SEPOLIA ||
+  "";
+
+const ETHERSCAN = process.env.ETHERSCAN_API_KEY || "";
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -21,18 +33,18 @@ const config: HardhatUserConfig = {
   },
   networks: {
     base: {
-      url: RPC_BASE,
+      url: RPC_URL_BASE,
       accounts
     },
     basesepolia: {
-      url: RPC_BASESEPOLIA,
+      url: RPC_URL_BASE_SEPOLIA,
       accounts
     }
   },
   etherscan: {
     apiKey: {
-      base: ETHERSCAN_API_KEY,
-      basesepolia: ETHERSCAN_API_KEY
+      base: ETHERSCAN,
+      basesepolia: ETHERSCAN
     }
   },
   gasReporter: {
