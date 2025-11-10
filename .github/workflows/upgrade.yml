@@ -39,9 +39,9 @@ jobs:
       - name: Configure RPC URL and export secrets
         run: |
           if [ "${{ inputs.network }}" = "base" ]; then
-            echo "RPC_URL=${{ secrets.BASE_RPC_MAINNET }}" >> $GITHUB_ENV
+            echo "RPC_URL=${{ secrets.RPC_URL_BASE }}" >> $GITHUB_ENV
           else
-            echo "RPC_URL=${{ secrets.BASE_RPC_SEPOLIA }}" >> $GITHUB_ENV
+            echo "RPC_URL=${{ secrets.RPC_URL_BASE_SEPOLIA }}" >> $GITHUB_ENV
           fi
           echo "PRIVATE_KEY=${{ secrets.PRIVATE_KEY }}" >> $GITHUB_ENV
           echo "ETHERSCAN_API_KEY=${{ secrets.ETHERSCAN_API_KEY }}" >> $GITHUB_ENV
@@ -49,7 +49,7 @@ jobs:
       - name: Check secrets
         run: |
           if [ -z "${RPC_URL}" ]; then
-            echo "::error title=Missing RPC secret::Set BASE_RPC_SEPOLIA for testnet or BASE_RPC_MAINNET for mainnet in Actions secrets."
+            echo "::error title=Missing RPC_URL::Set RPC_URL_BASE (mainnet) and RPC_URL_BASE_SEPOLIA (testnet) in Actions secrets."
             exit 1
           fi
           if [ -z "${PRIVATE_KEY}" ]; then
